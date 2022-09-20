@@ -57,12 +57,15 @@ one_XPATH = '/html/body/div[4]/div/div'
 
 
 try:
-    WebDriverWait(driver, 15).until(EC.presence_of_element_located(By.TAG_NAME, 'presentation'))
+    wait = WebDriverWait(driver, 3)
+
+    # WebDriverWait(driver, 15).until(EC.presence_of_element_located(By.NAME, 'robots'))
+    # WebDriverWait(driver, 15).until(driver.find_element(By.XPATH, one_XPATH))
     print ("Page is ready!")
 except TimeoutException:
     print ("Loading took too much time!")
-except Exception:
-    print ("###Wrong###! "*5)
+# except Exception:
+#     print ("###Wrong###! "*5)
 
 # # permission to use cookies, button
 # driver.find_element(By.XPATH, '/html/body/div[4]/div/div/button[1]').click()
