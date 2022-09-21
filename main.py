@@ -9,6 +9,18 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
 def options_chrome():
     'Selects an option for chrome'
     options = webdriver.ChromeOptions()
@@ -26,7 +38,7 @@ def login_to_insta(driver, verbose: str = ''):
     username_box = (By.NAME, "username")
     # wait_to_load username box
     wait_to_load_element_by_locator(
-        driver, username_box, 5, verbose)
+        driver, username_box, 'username_box', 5, verbose)
     # finds the username box
     login = driver.find_element(*username_box)
     # send entered username
@@ -35,7 +47,7 @@ def login_to_insta(driver, verbose: str = ''):
     # wait_to_load password box
     password_box = (By.NAME, "password")
     wait_to_load_element_by_locator(
-        driver, password_box, 5, verbose)
+        driver, password_box, 'password_box', 5, verbose)
     # finds the password box
     password = driver.find_element(*password_box)
     # send entered username
@@ -48,12 +60,12 @@ def login_to_insta(driver, verbose: str = ''):
         By.XPATH, '/html/body/div[1]/section/main/div/div/div[1]/div[2]/form/div/div[3]/button/div')
     login_buton = login_buton_by_CSS_SELECTOR
     wait_to_load_element_by_locator(
-        driver, login_buton, 15, verbose)
+        driver, login_buton, 'login_buton', 15, verbose)
     # press login buton
     click_buton(driver, login_buton)
 
 
-def wait_to_load_element_by_locator(driver, locator_and_element: tuple, time_to_load: int = 10, verbose: str = ''):
+def wait_to_load_element_by_locator(driver, locator_and_element: tuple, element_name: str = '<NO_NAME>', time_to_load: int = 10, verbose: str = ''):
     '''
      # Wait for element # 
      * driver
@@ -61,6 +73,7 @@ def wait_to_load_element_by_locator(driver, locator_and_element: tuple, time_to_
         * (By.XPATH, "xpath")  e.g. (By.XPATH, "/html/body/div[4]/div/div/button[1]")
         * (By.NAME, "name")    e.g. (By.NAME, "username")
         * (By.CLASS_NAME, "class name")
+     * element_name: str default == 'no name'
      * time_to_load: by default 10 sek
      * verbose:  for verbose == ('--verbose' or '-v') show execution time 
     '''
@@ -70,7 +83,7 @@ def wait_to_load_element_by_locator(driver, locator_and_element: tuple, time_to_
             EC.presence_of_element_located(locator_and_element))
         stop = time()
     except TimeoutException:
-        print("\n--- Loading took too much time! By.{}---\n".format(locator_and_element))
+        print("\n{}--- Loading took too much time! for: {} ---\n--- By.{} ---{}\n".format(bcolors.FAIL, element_name, locator_and_element, bcolors.ENDC))
     else:
         if (verbose == '--verbose') or (verbose == '-v'):
             print('--- elemet BY.{} = "{}" is ready! (in: {} sec) ---'.format(
@@ -93,7 +106,7 @@ def click_buton(driver, locator_and_element: tuple):
         print('>>> Something went wrong <<<')
 
 
-###  pop-up windows ###
+####  pop-up windows ####
 
 def turn_on_notifications(driver, option: str = 'NO'):
     '''
@@ -131,11 +144,11 @@ def allow_the_use_of_cookies_from_instagram_on_this_browser(driver, option: str 
     buton_no = XPATH_buton_no
 
     if option.upper() == 'NO':
-        wait_to_load_element_by_locator(driver, (By.XPATH, buton_no))
+        wait_to_load_element_by_locator(driver, (By.XPATH, buton_no), 'buton_no')
         click_buton(driver, (By.XPATH, buton_no))
 
     elif option.upper() == 'YES':
-        wait_to_load_element_by_locator(driver, (By.XPATH, buton_yes))
+        wait_to_load_element_by_locator(driver, (By.XPATH, buton_yes), 'buton_yes')
         click_buton(driver, (By.XPATH, buton_yes))
     else:
         raise "Bad choice!"
@@ -151,15 +164,23 @@ def save_your_login_info(driver, option: str = 'NO'):
     buton_no = '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/div/div/div/button'
 
     if option.upper() == 'NO':
-        wait_to_load_element_by_locator(driver, (By.XPATH, buton_no))
+        wait_to_load_element_by_locator(driver, (By.XPATH, buton_no), 'buton_no')
         click_buton(driver, (By.XPATH, buton_no))
     elif option.upper() == 'YES':
-        wait_to_load_element_by_locator(driver, (By.XPATH, buton_yes))
+        wait_to_load_element_by_locator(driver, (By.XPATH, buton_yes), 'buton_yes')
         click_buton(driver, (By.XPATH, buton_yes))
     else:
         raise "Bad choice!"
 
-########################
+
+def go_to_profile(driver):
+    XPATH_buton = '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/nav/div[2]/div/div/div[3]/div/div[6]/div[2]/div/div[2]/div[1]/a/div/div[2]/div/div/div/div'
+    XPATH_buton = '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/nav/div[2]/div/div/div[3]/div/div[2]/a/svg'
+    CSS_SELECTOR_buton = '#f34553ebeaf9ff4 > div > div > div'
+    wait_to_load_element_by_locator(driver, (By.XPATH, XPATH_buton), go_to_profile.__name__+'.go_to_profile_buton')
+    click_buton(driver, (By.XPATH, XPATH_buton))
+
+##########################
 
 
 url_google = 'https://www.google.com/'
@@ -182,6 +203,9 @@ save_your_login_info(driver)
 
 
 turn_on_notifications(driver)
+
+
+# go_to_profile(driver)
 
 
 ### END ###
