@@ -65,7 +65,7 @@ def login_to_insta(driver, verbose: str = ''):
     click_buton(driver, login_buton)
 
 
-def wait_to_load_element_by_locator(driver, locator_and_element: tuple, element_name: str = '<NO_NAME>', time_to_load: int = 10, verbose: str = ''):
+def wait_to_load_element_by_locator(driver, locator_and_element: tuple, element_name: str = '<NO_NAME>', time_to_load: int = 6, verbose: str = ''):
     '''
      # Wait for element # 
      * driver
@@ -83,8 +83,12 @@ def wait_to_load_element_by_locator(driver, locator_and_element: tuple, element_
             EC.presence_of_element_located(locator_and_element))
         stop = time()
     except TimeoutException:
-        print("\n{}--- Loading took too much time! for: {} ---\n--- By.{} ---{}\n".format(
-            bcolors.FAIL, element_name, locator_and_element, bcolors.ENDC))
+        print(
+            "\n{}--- Loading took too much time! ---{}\n".format(bcolors.FAIL, bcolors.ENDC))
+        print("function: {}{}{}\n".format(
+            bcolors.UNDERLINE, element_name[0], bcolors.ENDC))
+        print("element:  {}{}{}\n".format(
+            bcolors.UNDERLINE, element_name[1], bcolors.ENDC))
     else:
         if (verbose == '--verbose') or (verbose == '-v'):
             print('--- elemet BY.{} = "{}" is ready! (in: {} sec) ---'.format(
@@ -184,7 +188,7 @@ def go_to_profile(driver):
     XPATH_buton = '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/nav/div[2]/div/div/div[3]/div[2]/div[6]/div[1]/span/img[1]'
     CSS_SELECTOR_buton = '#f34553ebeaf9ff4 > div > div > div'
     wait_to_load_element_by_locator(
-        driver, (By.XPATH, XPATH_buton), go_to_profile.__name__+'.go_to_profile_buton', 1)
+        driver, (By.XPATH, XPATH_buton), (go_to_profile.__name__, 'go_to_profile_buton'), 1)
     click_buton(driver, (By.XPATH, XPATH_buton))
 
 ##########################
