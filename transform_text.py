@@ -7,7 +7,7 @@ def transform(text: str) -> str:
 
 
 def main():
-    text = 'Allow the use of cookies from Instagram on this browser?'
+    text = 'no selected name'
     print(transform(text))
 
 

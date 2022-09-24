@@ -83,7 +83,8 @@ def wait_to_load_element_by_locator(driver, locator_and_element: tuple, element_
             EC.presence_of_element_located(locator_and_element))
         stop = time()
     except TimeoutException:
-        print("\n{}--- Loading took too much time! for: {} ---\n--- By.{} ---{}\n".format(bcolors.FAIL, element_name, locator_and_element, bcolors.ENDC))
+        print("\n{}--- Loading took too much time! for: {} ---\n--- By.{} ---{}\n".format(
+            bcolors.FAIL, element_name, locator_and_element, bcolors.ENDC))
     else:
         if (verbose == '--verbose') or (verbose == '-v'):
             print('--- elemet BY.{} = "{}" is ready! (in: {} sec) ---'.format(
@@ -144,11 +145,13 @@ def allow_the_use_of_cookies_from_instagram_on_this_browser(driver, option: str 
     buton_no = XPATH_buton_no
 
     if option.upper() == 'NO':
-        wait_to_load_element_by_locator(driver, (By.XPATH, buton_no), 'buton_no')
+        wait_to_load_element_by_locator(
+            driver, (By.XPATH, buton_no), 'buton_no')
         click_buton(driver, (By.XPATH, buton_no))
 
     elif option.upper() == 'YES':
-        wait_to_load_element_by_locator(driver, (By.XPATH, buton_yes), 'buton_yes')
+        wait_to_load_element_by_locator(
+            driver, (By.XPATH, buton_yes), 'buton_yes')
         click_buton(driver, (By.XPATH, buton_yes))
     else:
         raise "Bad choice!"
@@ -164,10 +167,12 @@ def save_your_login_info(driver, option: str = 'NO'):
     buton_no = '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/div/div/div/button'
 
     if option.upper() == 'NO':
-        wait_to_load_element_by_locator(driver, (By.XPATH, buton_no), 'buton_no')
+        wait_to_load_element_by_locator(
+            driver, (By.XPATH, buton_no), 'buton_no')
         click_buton(driver, (By.XPATH, buton_no))
     elif option.upper() == 'YES':
-        wait_to_load_element_by_locator(driver, (By.XPATH, buton_yes), 'buton_yes')
+        wait_to_load_element_by_locator(
+            driver, (By.XPATH, buton_yes), 'buton_yes')
         click_buton(driver, (By.XPATH, buton_yes))
     else:
         raise "Bad choice!"
@@ -176,8 +181,10 @@ def save_your_login_info(driver, option: str = 'NO'):
 def go_to_profile(driver):
     XPATH_buton = '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/nav/div[2]/div/div/div[3]/div/div[6]/div[2]/div/div[2]/div[1]/a/div/div[2]/div/div/div/div'
     XPATH_buton = '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/nav/div[2]/div/div/div[3]/div/div[2]/a/svg'
+    XPATH_buton = '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/nav/div[2]/div/div/div[3]/div[2]/div[6]/div[1]/span/img[1]'
     CSS_SELECTOR_buton = '#f34553ebeaf9ff4 > div > div > div'
-    wait_to_load_element_by_locator(driver, (By.XPATH, XPATH_buton), go_to_profile.__name__+'.go_to_profile_buton')
+    wait_to_load_element_by_locator(
+        driver, (By.XPATH, XPATH_buton), go_to_profile.__name__+'.go_to_profile_buton', 1)
     click_buton(driver, (By.XPATH, XPATH_buton))
 
 ##########################
@@ -205,7 +212,7 @@ save_your_login_info(driver)
 turn_on_notifications(driver)
 
 
-# go_to_profile(driver)
+go_to_profile(driver)
 
 
 ### END ###
