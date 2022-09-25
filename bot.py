@@ -15,10 +15,18 @@ from bcolors import Bcolors as bc
 
 class Bot:
     def __init__(self) -> None:
-        self.driver = webdriver.Chrome(chrome_options=options_chrome())
+        self.driver = webdriver.Chrome(chrome_options=self.options_chrome())
 
         ### OPEN PAGE ###
         self.driver.get(Url.url_insta_log)
+
+    def options_chrome(self):
+        'Selects an option for chrome'
+        options = webdriver.ChromeOptions()
+        options.add_argument("--incognito")
+        options.add_argument("start-maximized")
+        options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        return options
 
     def wait_to_load_element_by_locator(self, tuple_of_locator_and_element: tuple, element_name: tuple = ('<NO_NAME>', '<NO_NAME>'), time_to_load: int = 5, verbose: str = '') -> tuple:
         '''
@@ -61,15 +69,15 @@ class Bot:
                     '\n{}--- elemet is ready! (in: {} sec) ---{}'.format(bc.OKGREEN, stop-start, bc.ENDC))
                 print("function:     {}".format(element_name[0]))
                 print("for element:  {}".format(element_name[1]))
-                print("list len:     {}".format(len(tuple_of_locator_and_element)))
-                print("element:      {}".format(
+                print("list len:     {}".format(
+                    len(tuple_of_locator_and_element)))
+                print("element:      {}\n".format(
                     tuple_of_locator_and_element[0]))
             else:
                 pass
             return tuple_of_locator_and_element[0]
 
-
-    def click_buton(self, locator_and_element: tuple):
+    def click_buton(self, locator_and_element: tuple, element_name: tuple = ('<NO_NAME>', '<NO_NAME>')):
         '''
         # Click buton
             * locator: tuple 
@@ -82,158 +90,160 @@ class Bot:
         except Exception:
             print('\n{}--- Something went wrong ---{}\n'.format(bc.FAIL, bc.ENDC))
             print("for: {}".format(locator_and_element))
+            print("function:     {}".format(element_name[0]))
+            print("for element:  {}".format(element_name[1]))
+            # to do
+            self.driver.close()
+            sys.exit()
 
     def do_login(self):
 
         self.box_allow_cookies()
 
-    def box_allow_cookies(self, option: str = 'NO'):
+        self.box_login()
+
+        self.box_save_login_info()
+
+        self.box_notifications()
+
+    def box_allow_cookies(self, option: str = 'NO', time_to_load: int = 5, verbose: str = ''):
         '''
-        option: str
-        * 'NO' <default>
-        * 'YES'
+        * option: str
+                * 'NO' <default>
+                * 'YES'
+        * time_to_load: by default 5 sek
+        * verbose:  for verbose == ('--verbose' or '-v') show execution time 
         '''
-        tuple_buton_no = locators_list.Box_allow_cookies.tuple_buton_no
-        tuple_buton_yes = locators_list.Box_allow_cookies.tuple_buton_yes
+        tuple_buton_no = locators_list.Box_allow_cookies.Buton_no.tuple
+        tuple_buton_yes = locators_list.Box_allow_cookies.Buton_yes.tuple
 
         if option.upper() == 'NO':
             element_name = (self.box_allow_cookies.__name__, 'buton_no')
             element_locator = self.wait_to_load_element_by_locator(
-                tuple_buton_no, element_name)
-            self.click_buton(element_locator)
+                tuple_buton_no, element_name, time_to_load, verbose)
+            self.click_buton(element_locator, element_name)
 
         elif option.upper() == 'YES':
             element_name = (self.box_allow_cookies.__name__, 'buton_yes')
             element_locator = self.wait_to_load_element_by_locator(
-                tuple_buton_yes, element_name)
-            self.click_buton(element_locator)
+                tuple_buton_no, element_name, time_to_load, verbose)
+            self.click_buton(element_locator, element_name)
         else:
             raise "Bad choice!"
 
+    def box_login(self, time_to_load: int = 5, verbose: str = ''):
+        '''
+        # Login to Insta #
+        * time_to_load: by default 5 sek
+        * verbose:  for verbose == ('--verbose' or '-v') show execution time 
+        '''
+        def do_username_box():
+            element_name = (self.box_login.__name__, 'username_box')
+            tuple_username_box = locators_list.Box_Login.Username_box.tuple
+            # wait_to_load username box
+            element_locator = self.wait_to_load_element_by_locator(tuple_username_box, element_name, time_to_load, verbose)
+            # finds the username box
+            login = self.driver.find_element(*element_locator)
+            # send entered username
+            login.send_keys(guarded_file.login)
 
-def options_chrome():
-    'Selects an option for chrome'
-    options = webdriver.ChromeOptions()
-    options.add_argument("--incognito")
-    options.add_argument("start-maximized")
-    options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    return options
+        def do_password_box():
+            element_name = (self.box_login.__name__, 'password_box')
+            tuple_password_box = locators_list.Box_Login.Password_box.tuple
+            # wait_to_load password box
+            element_locator = self.wait_to_load_element_by_locator(tuple_password_box, element_name, time_to_load, verbose)
+            # finds the password box
+            password = self.driver.find_element(*element_locator)
+            # send entered username
+            password.send_keys(guarded_file.password)
 
+        def do_login_buton():
+            element_name = (self.box_login.__name__, 'login_buton')
+            tuple_login_buton = locators_list.Box_Login.Login_buton.tuple
+            # wait_to_load login buton
+            element_locator = self.wait_to_load_element_by_locator(tuple_login_buton, element_name, time_to_load, verbose)
+            # press login buton
+            self.click_buton(element_locator, element_name)
 
-def login_to_insta(driver, verbose: str = ''):
-    '''
-     # Login to Insta # 
-     * verbose:  for verbose == ('--verbose' or '-v') show execution time 
-    '''
-    username_box = (By.NAME, "username")
-    # wait_to_load username box
-    wait_to_load_element_by_locator(
-        driver, username_box, 'username_box', 5, verbose)
-    # finds the username box
-    login = driver.find_element(*username_box)
-    # send entered username
-    login.send_keys(guarded_file.login)
+        do_username_box()
+        do_password_box()
+        do_login_buton()
 
-    # wait_to_load password box
-    password_box = (By.NAME, "password")
-    wait_to_load_element_by_locator(
-        driver, password_box, 'password_box', 5, verbose)
-    # finds the password box
-    password = driver.find_element(*password_box)
-    # send entered username
-    password.send_keys(guarded_file.password)
+    def box_save_login_info(self, option: str = 'NO', time_to_load: int = 5, verbose: str = ''):
+        '''
+        * option: str
+                * 'NO' <default>
+                * 'YES'
+        * time_to_load: by default 5 sek
+        * verbose:  for verbose == ('--verbose' or '-v') show execution time 
+        '''
+        tuple_buton_no = locators_list.Box_save_login_info.Buton_no.tuple
+        tuple_buton_yes = locators_list.Box_save_login_info.Buton_yes.tuple
 
-    # wait_to_load login buton
-    login_buton_by_CSS_SELECTOR = (
-        By.CSS_SELECTOR, '#loginForm > div > div:nth-child(3) > button > div')
-    login_buton_by_XPATH = (
-        By.XPATH, '/html/body/div[1]/section/main/div/div/div[1]/div[2]/form/div/div[3]/button/div')
-    login_buton = login_buton_by_CSS_SELECTOR
-    wait_to_load_element_by_locator(
-        driver, login_buton, 'login_buton', 15, verbose)
-    # press login buton
-    click_buton(driver, login_buton)
+        if option.upper() == 'NO':
+            element_name = (self.box_save_login_info.__name__, 'buton_no')
+            element_locator = self.wait_to_load_element_by_locator(tuple_buton_no, element_name, time_to_load, verbose)
+            self.click_buton(element_locator, element_name)
+        elif option.upper() == 'YES':
+            element_name = (self.box_save_login_info.__name__, 'buton_yes')
+            element_locator = self.wait_to_load_element_by_locator(tuple_buton_yes, element_name, time_to_load, verbose)
+            self.click_buton(element_locator, element_name)
+        else:
+            raise "Bad choice!"
 
-
-####  pop-up windows ####
-
-def turn_on_notifications(driver, option: str = 'NO'):
-    '''
-    option: str
-    * 'NO' <default>
-    * 'YES'
-    '''
-    XPATH_buton_yes = '/html/body/div[1]/div/div/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/button[1]'
-    XPATH_buton_no = '/html/body/div[1]/div/div/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/button[2]'
-
-    buton_yes = XPATH_buton_yes
-    buton_no = XPATH_buton_no
-
-    if option.upper() == 'NO':
-        wait_to_load_element_by_locator(driver, (By.XPATH, buton_no))
-        click_buton(driver, (By.XPATH, buton_no))
-
-    elif option.upper() == 'YES':
-        wait_to_load_element_by_locator(driver, (By.XPATH, buton_yes))
-        click_buton(driver, (By.XPATH, buton_yes))
-    else:
-        raise "Bad choice!"
-
-
-def save_your_login_info(driver, option: str = 'NO'):
-    '''
-    option: str
-    * 'NO' <default>
-    * 'YES'
-    '''
-    buton_yes = '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/div/div/section/div/button'
-    buton_no = '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/div/div/div/button'
-
-    if option.upper() == 'NO':
-        wait_to_load_element_by_locator(
-            driver, (By.XPATH, buton_no), 'buton_no')
-        click_buton(driver, (By.XPATH, buton_no))
-    elif option.upper() == 'YES':
-        wait_to_load_element_by_locator(
-            driver, (By.XPATH, buton_yes), 'buton_yes')
-        click_buton(driver, (By.XPATH, buton_yes))
-    else:
-        raise "Bad choice!"
+    def box_notifications(self, option: str = 'NO', time_to_load: int = 5, verbose: str = ''):
+        '''
+        * option: str
+                * 'NO' <default>
+                * 'YES'
+        * time_to_load: by default 5 sek
+        * verbose:  for verbose == ('--verbose' or '-v') show execution time               
+        '''
+        tuple_buton_no = locators_list.Box_notifications.Buton_no.tuple
+        tuple_buton_yes = locators_list.Box_notifications.Buton_yes.tuple
 
 
-def go_to_profile(driver):
-    XPATH_buton = '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/nav/div[2]/div/div/div[3]/div/div[6]/div[2]/div/div[2]/div[1]/a/div/div[2]/div/div/div/div'
-    XPATH_buton = '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/nav/div[2]/div/div/div[3]/div/div[2]/a/svg'
-    XPATH_buton = '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/nav/div[2]/div/div/div[3]/div[2]/div[6]/div[1]/span/img[1]'
-    CSS_SELECTOR_buton = '#f34553ebeaf9ff4 > div > div > div'
-    wait_to_load_element_by_locator(
-        driver, (By.XPATH, XPATH_buton), (go_to_profile.__name__, 'go_to_profile_buton'), 1)
-    click_buton(driver, (By.XPATH, XPATH_buton))
+        if option.upper() == 'NO':
+            element_name = (self.box_notifications.__name__, 'buton_no')
+            element_locator = self.wait_to_load_element_by_locator(tuple_buton_no, element_name, time_to_load, verbose)
+            self.click_buton(element_locator, element_name)
+
+        elif option.upper() == 'YES':
+            element_name = (self.box_notifications.__name__, 'buton_yes')
+            element_locator = self.wait_to_load_element_by_locator(tuple_buton_yes, element_name, time_to_load, verbose)
+            self.click_buton(element_locator, element_name)
+        else:
+            raise "Bad choice!"
+
+    def go_to_profile(self):
+        self.driver.get(Url.url_insta + '/' + guarded_file.user)
+
+    def get_basic_info(self):
+
+        tuple_element = locators_list.Get_basic_info.tuple
+        element_name = (self.get_basic_info.__name__, 'element')
+
+        print(bc.OKGREEN, tuple_element, bc.ENDC)
+        element_locator = self.wait_to_load_element_by_locator(tuple_element, element_name)
+        x = self.driver.find_elements(*element_locator)
+        print(len(x))       
+
+
+
 
 ##########################
-
-
-# allow_cookies(driver)
-
-
-# login_to_insta(driver)
-
-
-# save_your_login_info(driver)
-
-
-# turn_on_notifications(driver)
-
-
-# go_to_profile(driver)
 
 def main():
 
     insta_bot = Bot()
 
     insta_bot.do_login()
+    
+    insta_bot.go_to_profile()
 
-    sleep(5)
+    insta_bot.get_basic_info()
+
+    sleep(50)
 
 
 if __name__ == '__main__':
